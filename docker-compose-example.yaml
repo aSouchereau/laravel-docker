@@ -1,0 +1,26 @@
+version: '3.5'
+services:
+  app:
+    image: registry.alexsouch.com/souch/${REGISTRY_IMAGE_NAME}
+    ports:
+      - '8080:8080'
+    env_file:
+      - ./app.env
+    depends_on:
+      - db
+    restart: unless-stopped
+  db:
+    image: mysql:latest
+    cap_add:
+      - SYS_NICE
+    restart: unless-stopped
+    env_file:
+      - ./db.env
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./config/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+volumes:
+  db:
+    driver: local
